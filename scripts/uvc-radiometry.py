@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+
 # ROS integration
 import rospy
 from sensor_msgs.msg import Image
