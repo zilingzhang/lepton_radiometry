@@ -118,7 +118,7 @@ def main():
           data = q.get(True, 500)
           if data is None:
             break
-          
+          # print type(data[0][0])
           # Publish Raw Sensor Data, 
           # print(data)
           mat = Int16MultiArray()
