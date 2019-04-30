@@ -52,6 +52,40 @@ def display_temperature(img, val_k, loc, color):
   cv2.line(img, (x - 2, y), (x + 2, y), color, 1)
   cv2.line(img, (x, y - 2), (x, y + 2), color, 1)
 
+def get_head_temp(data,img,id):
+	id = str(id)
+	try:
+		(trans,rot) = listener.lookupTransform('/camera_depth_frame','/head_'+id,rospy.Time(0))
+		x,y = getPixels(trans)
+		# print x,y
+		if y>=0 and y<=120 and x>=0 and x<= 160:
+			print 'User '+id+' detected!'
+			k = data[y][x]
+			# c = ktoc(k)
+			# print c
+			# Get highest temp around head
+			head = data[y-10:y+10,x-10:x+10]
+			minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(head)
+			c = ktoc(maxVal)			
+			if c>20:
+				print "head temp:",c
+				meas = forehead_temp()
+				meas.user_id = 1
+				meas.forehead_temp = c
+				display_temperature(img, maxVal, (4*x,4*y),(0,255,0))
+				cv2.circle(img,(4*x,4*y),40,(0,255,0),2)
+				head2odom = listener.lookupTransform('/odom','/head_'+id,rospy.Time(0))
+				meas.x = head2odom[0][0]
+				meas.y = head2odom[0][1]
+				rospy.loginfo(meas)
+				pubTemp.publish(meas)
+	except (tf.ConnectivityException, tf.ExtrapolationException):
+		# print "tf exception"
+		pass
+	except (tf.LookupException):
+		# print "tf lookup"
+		pass
+
 def callback(data):
 	
 
@@ -67,139 +101,9 @@ def callback(data):
 	display_temperature(img, minVal, minLoc, (0, 0, 255))
 	display_temperature(img, maxVal, maxLoc, (255, 0, 0))
 
-	try:
-		
-		rospy.loginfo("callback")
-		
-		(trans1,rot1) = listener.lookupTransform('/camera_depth_frame', '/head_1', rospy.Time(0))
-		x1,y1 = getPixels(trans1)
-		print x1,y1
-		if y1>=0 and y1 <=120 and x1>=0 and x1<=160:
-			print "User 1 Detected!"
-			k = data.data[y1*160+x1]			
-			# print ktoc(data.data[y1*160+x1])
-			meas = forehead_temp()
-			meas.user_id = 1
-			meas.forehead_temp = ktoc(data.data[y1*160+x1])
-			display_temperature(img, k, (4*x1,4*y1), (0, 255, 0))
-			cv2.circle(img,(4*x1,4*y1),40,(0, 255, 0),2)
-			head2odom = listener.lookupTransform('/odom','head_1',rospy.Time(0))
-			meas.x = head2odom[0][0]
-			meas.y = head2odom[0][1]
-			rospy.loginfo(meas)
-			pubTemp.publish(meas)
-			
-		(trans2,rot2) = listener.lookupTransform('/camera_depth_frame', '/head_2', rospy.Time(0))
-		x2,y2 = getPixels(trans2)
-		print x2,y2
-		if y2>=0 and y2 <=120 and x2>=0 and x2<=160:
-			# print ktoc(data.data[y2*160+x2])
-			print "User 2 Detected!"
-			k = data.data[y2*160+x2]
-			meas = forehead_temp()
-			meas.user_id = 2
-			meas.forehead_temp = ktoc(data.data[y2*160+x2])
-			display_temperature(img, k, (4*x2,4*y2), (0, 255, 0))
-			cv2.circle(img,(4*x2,4*y2),40,(0, 255, 0),2)
-			head2odom = listener.lookupTransform('/odom','/head_2',rospy.Time(0))
-			meas.x = head2odom[0][0]
-			meas.y = head2odom[0][1]
-			rospy.loginfo(meas)
-			pubTemp.publish(meas)
-
-		(trans3,rot3) = listener.lookupTransform('/camera_depth_frame', '/head_3', rospy.Time(0))
-		x3,y3 = getPixels(trans3)
-		print x3,y3
-		if y3>=0 and y3 <=120 and x3>=0 and x3<=160:
-			# print ktoc(data.data[y2*160+x3])
-			print "User 3 Detected!"
-			k = data.data[y3*160+x3]
-			meas = forehead_temp()
-			meas.user_id = 3
-			meas.forehead_temp = ktoc(data.data[y3*160+x3])
-			display_temperature(img, k, (4*x3,4*y3), (0, 255, 0))
-			cv2.circle(img,(4*x3,4*y3),40,(0, 255, 0),2)
-			head2odom = listener.lookupTransform('/odom','/head_3',rospy.Time(0))
-			meas.x = head2odom[0][0]
-			meas.y = head2odom[0][1]
-			rospy.loginfo(meas)
-			pubTemp.publish(meas)
-
-		(trans4,rot4) = listener.lookupTransform('/camera_depth_frame', '/head_4', rospy.Time(0))
-		x4,y4 = getPixels(trans4)
-		print x4,y4
-		if y4>=0 and y4 <=120 and x4>=0 and x4<=160:
-			# print ktoc(data.data[y4*160+x4])
-			k = data.data[y4*160+x4]
-			meas = forehead_temp()
-			meas.user_id = 4
-			meas.forehead_temp = ktoc(data.data[y4*160+x4])
-			display_temperature(img, k, (4*x4,4*y4), (0, 255, 0))
-
-			head2odom = listener.lookupTransform('/odom','/head_4',rospy.Time(0))
-			meas.x = head2odom[0][0]
-			meas.y = head2odom[0][1]
-			rospy.loginfo(meas)
-			pubTemp.publish(meas)
-
-		(trans5,rot5) = listener.lookupTransform('/camera_depth_frame', '/head_5', rospy.Time(0))
-		x5,y5 = getPixels(trans5)
-		print x5,y5
-		if y5>=0 and y5 <=120 and x5>=0 and x5<=160:
-			# print ktoc(data.data[y2*160+x5])
-			k = data.data[y5*160+x5]
-			meas = forehead_temp()
-			meas.user_id = 5
-			meas.forehead_temp = ktoc(data.data[y5*160+x5])
-			display_temperature(img, k, (4*x5,4*y5), (0, 255, 0))
-
-			head2odom = listener.lookupTransform('/odom','/head_5',rospy.Time(0))
-			meas.x = head2odom[0][0]
-			meas.y = head2odom[0][1]
-			rospy.loginfo(meas)
-			pubTemp.publish(meas)
-
-		(trans6,rot6) = listener.lookupTransform('/camera_depth_frame', '/head_6', rospy.Time(0))
-		x6,y6 = getPixels(trans6)
-		print x6,y6
-		if y6>=0 and y6 <=120 and x6>=0 and x6<=160:
-			# print ktoc(data.data[y2*160+x6])
-			k = data.data[y6*160+x6]
-			meas = forehead_temp()
-			meas.user_id = 6
-			meas.forehead_temp = ktoc(data.data[y6*160+x6])
-			display_temperature(img, k, (4*x6,4*y6), (0, 255, 0))
-
-			head2odom = listener.lookupTransform('/odom','/head_6',rospy.Time(0))
-			meas.x = head2odom[0][0]
-			meas.y = head2odom[0][1]
-			rospy.loginfo(meas)
-			pubTemp.publish(meas)
-
-		(trans7,rot7) = listener.lookupTransform('/camera_depth_frame', '/head_7', rospy.Time(0))
-		x7,y7 = getPixels(trans7)
-		print x7,y7
-		if y7>=0 and y7 <=120 and x7>=0 and x7<=160:
-			# print ktoc(data.data[y2*160+x7])
-			k = data.data[y7*160+x7]
-			meas = forehead_temp()
-			meas.user_id = 7
-			meas.forehead_temp = ktoc(data.data[y7*160+x7])
-			display_temperature(img, k, (4*x7,4*y7), (0, 255, 0))
-
-			head2odom = listener.lookupTransform('/odom','/head_7',rospy.Time(0))
-			meas.x = head2odom[0][0]
-			meas.y = head2odom[0][1]
-			rospy.loginfo(meas)
-			pubTemp.publish(meas)
-			
-	except (tf.ConnectivityException, tf.ExtrapolationException):
-		# print "tf exception"
-		pass
-	except (tf.LookupException):
-		print "tf lookup"
-		pass
-
+	for i in range(1,10):
+		get_head_temp(datax,img,i)
+	
 	try:
 		image_pub.publish(bridge.cv2_to_imgmsg(img, "rgb8"))
 	except CvBridgeError as e:
