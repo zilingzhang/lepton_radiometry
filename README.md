@@ -1,12 +1,16 @@
 # lepton_radiometry
 simple python ROS wrapper for flir lepton 3.5 radiometry, publish raw sensor data (16bit per pixel, resolution 0.01K, start from absolute zero) and gray scale image (grayscale range clamp by max and min temp in a frame)
-
-# Pre-requisites
+To run lepton driver and ROS wrapper only:
+~~~~
+rosrun lepton_radiometry uvc-radiometry.py
+~~~~
 
 ## Udev rule that allows ROS accesss to the thermal camera	
 ~~~~
 sudo sh -c "echo 'SUBSYSTEMS==\"usb\", ATTRS{idVendor}==\"1e4e\", ATTRS{idProduct}==\"0100\", SYMLINK+=\"pt1\", GROUP=\"usb\", MODE=\"666\"' > /etc/udev/rules.d/99-pt1.rules"
 ~~~~
+
+# Pre-requisites for Kinect 1 integration
 
 ## ROS kinetic and turtlebot dependencies
 ~~~~
@@ -114,3 +118,4 @@ This launch file will start 4 packages: turtlebot bringup_minimal, openni_tracke
 ~~~~
 roslaunch lepton_radiometry start.launch
 ~~~~
+
