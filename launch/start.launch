@@ -2,12 +2,13 @@
   <!-- lepton -->
   <!-- <param name="/use_sim_time" value="$(arg simulation)"/> -->
     <!-- <arg name="simulation"        default="$(env TURTLEBOT_SIMULATION)"   doc="set flags to indicate this turtle is run in simulation mode."/> -->
-  <include file="$(find turtlebot_bringup)/launch/minimal.launch">
+  <include file="$(find turtlebot_bringup)/launch/minimal.launch" />
     <!-- <arg name="simulation" value="false" /> -->
-  </include>
+  <!-- <include file="$(find turtlebot_teleop)/launch/keyboard_teleop.launch"/> -->
   <node pkg="lepton_radiometry" type="uvc-radiometry.py" name="uvc_radiometry" />
   <node pkg="lepton_radiometry" type="get-forehead-temp.py" name="get_forehead_temp" />
   <node pkg="openni_tracker" type="openni_tracker" name="openni_tracker" />
+  <node pkg="comfort_stats" type="collect_localized_pmv.py" name="collect_localized_pmv" />
   <node type="rviz" name="rviz" pkg="rviz" />
 
 </launch>
